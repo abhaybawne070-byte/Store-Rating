@@ -3,6 +3,7 @@ const cors = require("cors");
 
 const storeRoutes = require("./routes/storeRoutes");
 const authRoutes = require("./routes/authRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
 
@@ -15,7 +16,8 @@ app.get("/", (req, res) => {
   });
 });
 
-app.use("/api/stores",storeRoutes)
+app.use("/api/stores",storeRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 
 module.exports = app;
