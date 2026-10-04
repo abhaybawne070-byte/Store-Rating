@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 
+const storeRoutes = require("./routes/storeRoutes");
+
 const app = express();
 
 app.use(cors());
@@ -11,5 +13,7 @@ app.get("/", (req, res) => {
     message: "Store Rating app is running",
   });
 });
+
+app.use("/api/stores",storeRoutes)
 
 module.exports = app;
