@@ -5,7 +5,9 @@ const router = express.Router();
 const {
     adminTest,
     getDashboardStats,
-    getUsers
+    getUsers,
+    getAdminStores,
+    createStore
 } = require("../controllers/adminController");
 
 const {
@@ -33,5 +35,21 @@ router.get(
     authorizeRoles("ADMIN"),
     getUsers
 );
+
+router.get(
+    "/stores",
+    authenticate,
+    authorizeRoles("ADMIN"),
+    getAdminStores
+);
+
+router.post(
+    "/stores",
+    authenticate,
+    authorizeRoles("ADMIN"),
+    createStore
+);
+
+
 
 module.exports = router;
