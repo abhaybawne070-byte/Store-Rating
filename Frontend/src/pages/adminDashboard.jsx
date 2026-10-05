@@ -14,6 +14,15 @@ function AdminDashboard() {
 
     const [deletingStore, setDeletingStore] = useState(null);
 
+    const [editingStore, setEditingStore] = useState(null);
+
+    const [editStoreForm, setEditStoreForm] = useState({
+        name: "",
+        email: "",
+        address: "",
+        owner_id: ""
+    });
+
     const [dashboard, setDashboard] = useState(null);
 
     const [users, setUsers] = useState([]);
@@ -119,7 +128,7 @@ function AdminDashboard() {
 
 
     // LOAD DATA
-dd
+
 
     useEffect(() => {
 
@@ -128,9 +137,9 @@ dd
     }, []);
 
 
-dd
+
     // STORE FORM CHANGE
-dd
+
 
     const handleStoreChange = (e) => {
 
@@ -147,9 +156,9 @@ dd
     };
 
 
-dd
+
     // CREATE STORE
-dd
+
 
     const handleCreateStore = async (e) => {
 
@@ -266,10 +275,61 @@ dd
 
     };
 
+    const handleEditStore = (store) => {
 
+        setEditingStore(store);
+
+        setEditStoreForm({
+            name: store.name || "",
+            email: store.email || "",
+            address: store.address || "",
+            owner_id: store.owner_id || ""
+        });
+
+    };
+
+    const handleUpdateStore = async (e) => {
+
+    e.preventDefault();
+
+    try {
+
+        await api.put(
+            `/admin/stores/${editingStore.id}`,
+            {
+                name: editStoreForm.name,
+                email: editStoreForm.email,
+                address: editStoreForm.address,
+                owner_id:
+                    editStoreForm.owner_id
+                        ? Number(editStoreForm.owner_id)
+                        : null
+            }
+        );
+
+        alert("Store updated successfully");
+
+        setEditingStore(null);
+
+        await fetchDashboard();
+
+        } catch (error) {
+
+        console.error(
+            "Update store error:",
+            error
+        );
+
+        alert(
+            error.response?.data?.message ||
+            "Failed to update store"
+        );
+
+    }
+
+    };
 
     // LOGOUT
-
 
     const handleLogout = () => {
 
@@ -280,9 +340,9 @@ dd
     };
 
 
-dd
+
     // SEARCH USERS
-dd
+
 
     const filteredUsers =
         users.filter((user) => {
@@ -369,7 +429,7 @@ dd
     }
 
 
-
+    
     // MAIN UI
 
 
@@ -693,7 +753,153 @@ dd
 
                 </section>
 
+                {editingStore && (
 
+                        <section className="dashboard-section">
+
+                                    <h2>
+                                         Edit Store
+                                    </h2>
+
+
+                                    <form
+                                             className="store-form"
+                                             onSubmit={handleUpdateStore}
+                                    >
+
+                                {/* Store Name */}
+
+                                    <div className="form-group">
+
+                <label>
+                    Store Name
+                </label>
+
+                <input
+                    type="text"
+                    value={editStoreForm.name}
+                    onChange={(e) =>
+                        setEditStoreForm({
+                            ...editStoreForm,
+                            name: e.target.value
+                        })
+                    }
+                    required
+                />
+
+                                    </div>
+
+
+                                {/* Email */}
+
+                                   <div className="form-group">
+
+                <label>
+                    Store Email
+                </label>
+
+                <input
+                    type="email"
+                    value={editStoreForm.email}
+                    onChange={(e) =>
+                        setEditStoreForm({
+                            ...editStoreForm,
+                            email: e.target.value
+                        })
+                    }
+                    required
+                />
+
+                                   </div>
+
+
+                                {/* Address */}
+
+                                 <div className="form-group">
+
+                <label>
+                    Store Address
+                </label>
+
+                <input
+                    type="text"
+                    value={editStoreForm.address}
+                    onChange={(e) =>
+                        setEditStoreForm({
+                            ...editStoreForm,
+                            address: e.target.value
+                        })
+                    }
+                    required
+                />
+
+                                </div>
+
+
+                                {/* Owner */}
+
+                                   <div className="form-group">
+
+                <label>
+                    Select Owner
+                </label>
+
+                <select
+                    value={editStoreForm.owner_id}
+                    onChange={(e) =>
+                        setEditStoreForm({
+                            ...editStoreForm,
+                            owner_id: e.target.value
+                        })
+                    }
+                >
+
+                    <option value="">
+                        Select Owner
+                    </option>
+
+
+                    {owners.map((owner) => (
+
+                        <option
+                            key={owner.id}
+                            value={owner.id}
+                        >
+                            {owner.name} - {owner.email}
+                        </option>
+
+                    ))}
+
+                </select>
+
+                                 </div>
+
+
+                                {/* Buttons */}
+
+                                   <div className="form-button">
+
+                <button type="submit">
+                    Update Store
+                </button>
+
+
+                <button
+                    type="button"
+                    onClick={() =>
+                        setEditingStore(null)
+                    }
+                >
+                    Cancel
+                </button>
+
+                                 </div>
+
+                                </form>
+
+                        </section>
+
+                    )}
 
                 {/* 
                     USERS
@@ -944,6 +1150,36 @@ dd
                                                     </td>
 
                                                     <td>
+
+                                                     <td>
+
+                                            <button
+                                                    className="edit-button"
+                                                        onClick={() =>
+                                                        handleEditStore(store)
+                                                    }
+                                                    >
+                                                     Edit
+                                            </button>
+
+
+                                            <button
+                                                     className="delete-button"
+                                                        onClick={() =>
+                                                        handleDeleteStore(store.id)
+                                                    }
+                                                    disabled={
+                                                        deletingStore === store.id
+                                                    }
+                                                    >
+                                                   {
+                                                    deletingStore === store.id
+                                                    ? "Deleting..."
+                                                        : "Delete"
+                                                    }
+                                                    </button>
+
+                                                    </td>   
 
                                                     <button
                                                         className="delete-button"

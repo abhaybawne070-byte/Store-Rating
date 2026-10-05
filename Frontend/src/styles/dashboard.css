@@ -279,3 +279,22 @@ th {
 
     cursor: not-allowed;
 }
+
+.edit-button {
+    background: #2563eb;
+    color: white;
+
+    border: none;
+
+    padding: 8px 12px;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    margin-right: 6px;
+}
+
+.edit-button:hover {
+    background: #1d4ed8;
+}

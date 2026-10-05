@@ -7,7 +7,9 @@ const {
     getDashboardStats,
     getUsers,
     getAdminStores,
-    createStore
+    createStore,
+    deleteStore,
+    updateStore
 } = require("../controllers/adminController");
 
 const {
@@ -50,6 +52,19 @@ router.post(
     createStore
 );
 
+router.delete(
+    "/stores/:id",
+    authenticate,
+    authorizeRoles("ADMIN"),
+    deleteStore
+);
+
+router.put(
+    "/stores/:id",
+    authenticate,
+    authorizeRoles("ADMIN"),
+    updateStore
+);
 
 
 module.exports = router;

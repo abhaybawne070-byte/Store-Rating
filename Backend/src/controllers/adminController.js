@@ -251,11 +251,127 @@ const createStore = async (req, res) => {
     }
 };
 
+const deleteStore = async (req, res) => {
+    try {
+
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({
+                message: "Store ID is required"
+            });
+        }
+
+        const result = await pool.query(
+            `
+            DELETE FROM stores
+            WHERE id = $1
+            RETURNING *
+            `,
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                message: "Store not found"
+            });
+        }
+
+        res.json({
+            message: "Store deleted successfully",
+            store: result.rows[0]
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Delete store error:",
+            error.message
+        );
+
+        res.status(500).json({
+            message: "Failed to delete store"
+        });
+
+    }
+};
+
+const updateStore = async (req, res) => {
+    try {
+
+        const { id } = req.params;
+
+        const {
+            name,
+            email,
+            address,
+            owner_id
+        } = req.body;
+
+
+        if (!name || !email || !address) {
+            return res.status(400).json({
+                message: "Name, email and address are required"
+            });
+        }
+
+
+        const result = await pool.query(
+            `
+            UPDATE stores
+            SET
+                name = $1,
+                email = $2,
+                address = $3,
+                owner_id = $4
+            WHERE id = $5
+            RETURNING *
+            `,
+            [
+                name,
+                email,
+                address,
+                owner_id || null,
+                id
+            ]
+        );
+
+
+        if (result.rows.length === 0) {
+
+            return res.status(404).json({
+                message: "Store not found"
+            });
+
+        }
+
+
+        res.json({
+            message: "Store updated successfully",
+            store: result.rows[0]
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Update store error:",
+            error.message
+        );
+
+        res.status(500).json({
+            message: "Failed to update store"
+        });
+
+    }
+};
 
 module.exports = {
     adminTest,
     getDashboardStats,
     getUsers,
     getAdminStores,
-    createStore
+    createStore,
+    deleteStore,
+    updateStore
 };
