@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { logout } from "../utils/auth";
 
+import "../styles/ownerDashboard.css";
+
 function OwnerDashboard() {
 
     const navigate = useNavigate();
@@ -97,11 +99,14 @@ function OwnerDashboard() {
 
     return (
 
-        <div>
+        <div className="owner-dashboard">
 
             <h1>Owner Dashboard</h1>
 
-            <button onClick={handleLogout}>
+            <button 
+                className="logout-btn"
+                onClick={handleLogout}
+            >
                 Logout
             </button>
 
@@ -111,150 +116,153 @@ function OwnerDashboard() {
 
             {/* Store Information */}
 
-            <h2>My Store</h2>
+            <section className="owner-section">
 
-            <div>
-
-                <h3>
+            <h2>
+                My Store
+            </h2>
+                
+            <div className="store-info">
+                  <h3>
                     {dashboard?.store?.name}
-                </h3>
-
-                <p>
-                    Email: {dashboard?.store?.email}
-                </p>
-
-                <p>
-                    Address: {dashboard?.store?.address}
-                </p>
-
+                  </h3>
+                  <p>
+                    <strong>Email:</strong>{" "}
+                    {dashboard?.store?.email}
+                  </p>
+                  <p>
+                    <strong>Address:</strong>{" "}
+                    {dashboard?.store?.address}
+                  </p>
             </div>
 
-
-            <hr />
+            </section>
 
 
             {/* Statistics */}
 
+            <section className="owner-section">
+
             <h2>Statistics</h2>
 
-            <div>
+            <div className="owner-stats">
 
-                <div>
+                <div className="owner-stat-card">
+                   <h3>
+                    Average Rating
+                   </h3>
 
-                    <h3>
-                        Average Rating
-                    </h3>
-
-                    <p>
+                   <p>
                         ⭐{" "}
                         {dashboard?.statistics?.average_rating ?? 0}
-                    </p>
+                   </p>
 
                 </div>
 
+                <div className="owner-stat-card">
+                      <h3>
+                        Total Rating
+                      </h3>
 
-                <div>
-
-                    <h3>
-                        Total Ratings
-                    </h3>
-
-                    <p>
-                        {dashboard?.statistics?.total_ratings ?? 0}
-                    </p>
-
+                      <p>
+                        {dashboard?.statistics?.total_ratings??0}
+                      </p>
                 </div>
 
             </div>
 
-
-            <hr />
+        </section>
+           
 
 
             {/* Ratings */}
 
-            <h2>User Ratings</h2>
+        <section className="owner-section">
+
+         <h2>
+             User Ratings
+         </h2>
 
 
-            {!dashboard?.ratings ||
-            dashboard.ratings.length === 0 ? (
+         {!dashboard?.ratings ||
+         dashboard.ratings.length === 0 ? (
 
-                <p>
-                    No ratings yet.
-                </p>
+        <p>
+            No ratings yet.
+        </p>
 
-            ) : (
+          ) : (
 
-                <table
-                    border="1"
-                    cellPadding="10"
-                >
+        <table className="owner-table">
 
-                    <thead>
+            <thead>
 
-                        <tr>
+                <tr>
 
-                            <th>
-                                User
-                            </th>
+                    <th>
+                        User
+                    </th>
 
-                            <th>
-                                Email
-                            </th>
+                    <th>
+                        Email
+                    </th>
 
-                            <th>
-                                Rating
-                            </th>
+                    <th>
+                        Rating
+                    </th>
 
-                            <th>
-                                Date
-                            </th>
+                    <th>
+                        Date
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {dashboard.ratings.map(
+                    (rating) => (
+
+                        <tr key={rating.id}>
+
+                            <td>
+                                {rating.user_name}
+                            </td>
+
+                            <td>
+                                {rating.user_email}
+                            </td>
+
+                            <td className="owner-rating">
+                                ⭐ {rating.rating}
+                            </td>
+
+                            <td>
+                                {rating.created_at
+                                    ? new Date(
+                                        rating.created_at
+                                    ).toLocaleDateString()
+                                    : "-"
+                                }
+                            </td>
 
                         </tr>
 
-                    </thead>
+                    )
+                )}
 
+            </tbody>
 
-                    <tbody>
+        </table>
+ 
+        )}
 
-                        {dashboard.ratings.map(
-                            (rating) => (
+    </section>
 
-                                <tr key={rating.id}>
+    </div>
 
-                                    <td>
-                                        {rating.user_name}
-                                    </td>
-
-                                    <td>
-                                        {rating.user_email}
-                                    </td>
-
-                                    <td>
-                                        ⭐ {rating.rating}
-                                    </td>
-
-                                    <td>
-                                        {rating.created_at
-                                            ? new Date(
-                                                rating.created_at
-                                            ).toLocaleDateString()
-                                            : "-"
-                                        }
-                                    </td>
-
-                                </tr>
-
-                            )
-                        )}
-
-                    </tbody>
-
-                </table>
-
-            )}
-
-        </div>
     );
 }
 

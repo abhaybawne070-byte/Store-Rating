@@ -7,7 +7,7 @@ import {
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
-import AdminDashboard from "./pages/AdminDashboard";
+import AdminDashboard from "./pages/adminDashboard";
 import UserDashboard from "./pages/UserDashboard";
 import OwnerDashboard from "./pages/OwnerDashboard";
 

@@ -163,9 +163,9 @@ th {
 }
 
 
-/* =========================
+/* 
    FORM
-========================= */
+*/
 
 .store-form {
     display: grid;
@@ -297,4 +297,171 @@ th {
 
 .edit-button:hover {
     background: #1d4ed8;
+}
+
+.owner-dashboard {
+    padding: 30px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.owner-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.owner-header h1 {
+    margin: 0;
+}
+
+.logout-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.owner-section {
+    background: white;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.owner-section h2 {
+    margin-top: 0;
+}
+
+.store-info p {
+    margin: 10px 0;
+}
+
+.owner-stats {
+    display: flex;
+    gap: 20px;
+}
+
+.owner-stat-card {
+    flex: 1;
+    padding: 20px;
+    border-radius: 10px;
+    background: #f5f5f5;
+}
+
+.owner-stat-card h3 {
+    margin-top: 0;
+}
+
+.owner-stat-card p {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.owner-rating {
+    font-weight: bold;
+}
+
+.owner-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.owner-table th,
+.owner-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.owner-table th {
+    font-weight: bold;
+}
+
+.owner-error {
+    padding: 20px;
+    text-align: center;
+}
+
+.owner-dashboard {
+    padding: 30px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.owner-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.owner-header h1 {
+    margin: 0;
+}
+
+.logout-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.owner-section {
+    background: white;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.owner-section h2 {
+    margin-top: 0;
+}
+
+.store-info p {
+    margin: 10px 0;
+}
+
+.owner-stats {
+    display: flex;
+    gap: 20px;
+}
+
+.owner-stat-card {
+    flex: 1;
+    padding: 20px;
+    border-radius: 10px;
+    background: #f5f5f5;
+}
+
+.owner-stat-card h3 {
+    margin-top: 0;
+}
+
+.owner-stat-card p {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.owner-rating {
+    font-weight: bold;
+}
+
+.owner-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.owner-table th,
+.owner-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.owner-table th {
+    font-weight: bold;
 }
