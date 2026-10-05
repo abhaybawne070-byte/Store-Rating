@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import "../styles/dashboard.css";
 
 function Signup() {
 
@@ -107,22 +108,27 @@ function Signup() {
 
     return (
 
-        <div>
+        <div className="auth-page">
+
+            <div className="auth-card">
 
             <h1>Create Account</h1>
 
-
+               <p className="auth-subtitle">
+                   Create your Store Rating account
+               </p>
+ 
             <form onSubmit={handleSignup}>
 
                 {/* Name */}
 
-                <div>
+                <div className="auth-form-group">
 
                     <label>
                         Name
                     </label>
 
-                    <br />
+
 
                     <input
                         type="text"
@@ -136,12 +142,12 @@ function Signup() {
                 </div>
 
 
-                <br />
+
 
 
                 {/* Email */}
 
-                <div>
+                <div className="auth-form-group">
 
                     <label>
                         Email
@@ -166,7 +172,7 @@ function Signup() {
 
                 {/* Address */}
 
-                <div>
+                <div className="auth-form-group">
 
                     <label>
                         Address
@@ -186,12 +192,12 @@ function Signup() {
                 </div>
 
 
-                <br />
+
 
 
                 {/* Password */}
 
-                <div>
+                <div className="auth-form-group">
 
                     <label>
                         Password
@@ -211,12 +217,12 @@ function Signup() {
                 </div>
 
 
-                <br />
+
 
 
                 {/* Confirm Password */}
 
-                <div>
+                <div className="auth-form-group">
 
                     <label>
                         Confirm Password
@@ -236,13 +242,13 @@ function Signup() {
                 </div>
 
 
-                <br />
+
 
 
                 {/* Error */}
 
                 {error && (
-                    <p>
+                    <p className="error-message">
                         {error}
                     </p>
                 )}
@@ -251,13 +257,14 @@ function Signup() {
                 {/* Success */}
 
                 {success && (
-                    <p>
+                    <p className="success-message">
                         {success}
                     </p>
                 )}
 
 
                 <button
+                    className="auth-button"
                     type="submit"
                     disabled={loading}
                 >
@@ -271,15 +278,14 @@ function Signup() {
 
             </form>
 
-
-            <br />
-
-
             <button
+                className="secondary-button"
                 onClick={() => navigate("/login")}
             >
                 Already have an account? Login
             </button>
+
+            </div>
 
         </div>
     );

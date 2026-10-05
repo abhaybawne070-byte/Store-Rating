@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../utils/auth";
+import "../styles/dashboard.css";
 
 function UserDashboard() {
 
@@ -11,6 +12,9 @@ function UserDashboard() {
 
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
+
+    const [sortBy, setSortBy] = useState("id");
+    const [order, setOrder] = useState("asc");
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -29,7 +33,9 @@ function UserDashboard() {
             const response = await api.get("/user/stores", {
                 params: {
                     name: name || undefined,
-                    address: address || undefined
+                    address: address || undefined,
+                    sortBy,
+                    order
                 }
             });
 
@@ -146,11 +152,16 @@ function UserDashboard() {
 
 
     return (
-        <div>
+        <div className="user-dashboard">
 
-            <h1>Store Rating App</h1>
-
-            <button onClick={handleLogout}>
+            <div>
+                <h1>Store Rating App</h1>
+                <p>Find stores and share your rating</p>
+            </div>
+            <button
+                 className="logout-btn"
+                 onClick={handleLogout}
+            >
                 Logout
             </button>
 
@@ -163,7 +174,7 @@ function UserDashboard() {
 
             {/* Search */}
 
-            <div>
+            <div className="search-box">
 
                 <input
                     type="text"
@@ -188,7 +199,54 @@ function UserDashboard() {
                 </button>
 
             </div>
+             
+             
+            <hr/>
+      
+            <div className="sort-box">
 
+                <select
+                    value={sortBy}
+                    onChange={(e) => 
+                        setSortBy(e.target.value)
+                    }
+                >
+                    <option value="id">
+                        Default
+                    </option>
+
+                    <option value="name">
+                        Store Name
+                    </option>
+
+                    <option value="address">
+                        Address
+                    </option>
+
+                    <option value="rating">
+                        Rating
+                    </option>
+                </select>
+
+                <select 
+                    value={order}
+                    onChange={(e) => 
+                        setOrder(e.target.value)
+                    }
+                >
+                    <option value="asc">
+                        Ascending
+                    </option>
+
+                    <option value="desc">
+                        Descending
+                    </option>
+                </select>
+
+                <button onClick={fetchStores}>
+                    Sort
+                </button>
+            </div>
 
             <hr />
 
@@ -222,11 +280,7 @@ function UserDashboard() {
 
                         <div
                             key={store.id}
-                            style={{
-                                border: "1px solid #ccc",
-                                padding: "20px",
-                                marginBottom: "15px"
-                            }}
+                            className="store-card"
                         >
 
                             <h3>
@@ -260,6 +314,7 @@ function UserDashboard() {
                             {/* Rating */}
 
                             <select
+                                className="rating-select"
                                 value={ratings[store.id] || ""}
                                 onChange={(e) =>
                                     handleRatingChange(
@@ -302,6 +357,7 @@ function UserDashboard() {
                             {store.my_rating === null ? (
 
                                 <button
+                                    className="rating-btn"
                                     onClick={() =>
                                         submitRating(store.id)
                                     }
@@ -312,6 +368,7 @@ function UserDashboard() {
                             ) : (
 
                                 <button
+                                     className="rating-btn"
                                     onClick={() =>
                                         updateRating(store.id)
                                     }

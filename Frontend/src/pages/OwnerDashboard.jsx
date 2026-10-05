@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import "../styles/dashboard.css";
+
 import api from "../services/api";
 import { logout } from "../utils/auth";
 
-import "../styles/ownerDashboard.css";
 
 function OwnerDashboard() {
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import "../styles/dashboard.css";
 
 function Login() {
 
@@ -74,9 +75,15 @@ function Login() {
 
     return (
 
-        <div>
+        <div className="auth-page">
+
+            <div className="auth-page">
 
             <h1>Store Rating App</h1>
+
+            <p className="auth-subtitle">
+                Login to continue
+            </p>
 
             <h2>Login</h2>
 
@@ -96,7 +103,7 @@ function Login() {
                     />
                 </div>
 
-                <br />
+
 
                 <div>
                     <label>Password</label>
@@ -112,13 +119,16 @@ function Login() {
                     />
                 </div>
 
-                <br />
+
 
                 {error && (
-                    <p>{error}</p>
+                    <p  className="error-message">
+                         {error}
+                    </p>
                 )}
 
                 <button
+                    className="auth-button"
                     type="submit"
                     disabled={loading}
                 >
@@ -127,13 +137,16 @@ function Login() {
 
             </form>
 
-            <br />
+
 
             <button
+                className="secondary-button"
                 onClick={() => navigate("/signup")}
             >
                 Create Account
             </button>
+
+            </div>
 
         </div>
     );
