@@ -1,39 +1,33 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
 import { useNavigate } from "react-router-dom";
+
+import api from "../services/api";
 import { logout } from "../utils/auth";
+import Navbar from "../components/Navbar";
+
 import "../styles/dashboard.css";
 
 function AdminDashboard() {
-
     const navigate = useNavigate();
- 
-    // STATES
 
-    const [creatingStore, setCreatingStore] = useState(false);
-
-    const [deletingStore, setDeletingStore] = useState(null);
-
-    const [editingStore, setEditingStore] = useState(null);
-
-    const [editStoreForm, setEditStoreForm] = useState({
-        name: "",
-        email: "",
-        address: "",
-        owner_id: ""
-    });
-
-    const [dashboard, setDashboard] = useState(null);
-
+    const [stats, setStats] = useState(null);
     const [users, setUsers] = useState([]);
-
     const [stores, setStores] = useState([]);
 
-    const [owners, setOwners] = useState([]);
+    const [userName, setUserName] = useState("");
+    const [userEmail, setUserEmail] = useState("");
+    const [userAddress, setUserAddress] = useState("");
 
-    const [userSearch, setUserSearch] = useState("");
+    const [storeName, setStoreName] = useState("");
+    const [storeEmail, setStoreEmail] = useState("");
+    const [storeAddress, setStoreAddress] = useState("");
 
-    const [storeSearch, setStoreSearch] = useState("");
+    const [userRole, setUserRole] = useState("");
+    const [userSortBy, setUserSortBy] = useState("created_at");
+    const [userOrder, setUserOrder] = useState("DESC");
+
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     const [storeForm, setStoreForm] = useState({
         name: "",
@@ -42,164 +36,102 @@ function AdminDashboard() {
         owner_id: ""
     });
 
-    const [storeMessage, setStoreMessage] = useState("");
-
-    const [storeError, setStoreError] = useState("");
-
-    const [loading, setLoading] = useState(true);
-
-    const [error, setError] = useState("");
-
-
-    // FETCH ADMIN DASHBOARD
-
     const fetchDashboard = async () => {
-
         try {
-
             setLoading(true);
-
             setError("");
 
             const [
-                dashboardResponse,
+                statsResponse,
                 usersResponse,
                 storesResponse
             ] = await Promise.all([
-
                 api.get("/admin/dashboard"),
-
                 api.get("/admin/users"),
-
                 api.get("/admin/stores")
-
             ]);
 
-
-            // Dashboard statistics
-            setDashboard(
-                dashboardResponse.data
-            );
-
-
-            // Users
-            const usersData =
-                usersResponse.data;
-
-            setUsers(usersData);
-
-
-            // Only OWNER users
-            const ownerUsers =
-                usersData.filter(
-                    (user) =>
-                        user.role === "OWNER"
-                );
-
-            setOwners(ownerUsers);
-
-
-            // Stores
-            setStores(
-                storesResponse.data
-            );
-
+            setStats(statsResponse.data);
+            setUsers(usersResponse.data);
+            setStores(storesResponse.data);
 
         } catch (error) {
-
-            console.error(
-                "Admin dashboard error:",
-                error
-            );
+            console.error("Admin dashboard error:", error);
 
             setError(
                 error.response?.data?.message ||
                 "Failed to load admin dashboard"
             );
-
         } finally {
-
             setLoading(false);
-
         }
-
     };
 
-
-
-    // LOAD DATA
-
-
     useEffect(() => {
-
         fetchDashboard();
-
     }, []);
 
+    const searchUsers = async () => {
+        try {
+            const response = await api.get("/admin/users", {
+                params: {
+                    name: userName || undefined,
+                    email: userEmail || undefined,
+                    address: userAddress || undefined,
+                    role: userRole || undefined,
+                    sortBy: userSortBy,
+                    order: userOrder
+                }
+            });
 
+            setUsers(response.data);
 
-    // STORE FORM CHANGE
+        } catch (error) {
+            console.error("User search error:", error);
+        }
+    };
 
+    const searchStores = async () => {
+        try {
+            const response = await api.get("/admin/stores", {
+                params: {
+                    name: storeSearch || undefined,
+                    email: storeEmail || undefined,
+                    address: storeAddress || undefined
+                }
+            });
+
+            setStores(response.data);
+
+        } catch (error) {
+            console.error("Store search error:", error);
+        }
+    };
 
     const handleStoreChange = (e) => {
-
-        const {
-            name,
-            value
-        } = e.target;
+        const { name, value } = e.target;
 
         setStoreForm({
             ...storeForm,
             [name]: value
         });
-
     };
 
-
-
-    // CREATE STORE
-
-
-    const handleCreateStore = async (e) => {
-
+    const createStore = async (e) => {
         e.preventDefault();
 
-        setStoreMessage("");
-
-        setStoreError("");
-
-        setCreatingStore(true);
-
-
         try {
+            await api.post("/admin/stores", {
+                name: storeForm.name,
+                email: storeForm.email,
+                address: storeForm.address,
+                owner_id: storeForm.owner_id
+                    ? Number(storeForm.owner_id)
+                    : null
+            });
 
-            const response =
-                await api.post(
-                    "/admin/stores",
-                    {
-                        name: storeForm.name,
-                        email: storeForm.email,
-                        address: storeForm.address,
-                        owner_id:
-                            Number(
-                                storeForm.owner_id
-                            )
-                    }
-                );
+            alert("Store created successfully");
 
-
-            console.log(
-                "Store created:",
-                response.data
-            );
-
-
-            setStoreMessage(
-                "Store created successfully!"
-            );
-
-
-            // Clear form
             setStoreForm({
                 name: "",
                 email: "",
@@ -207,1024 +139,377 @@ function AdminDashboard() {
                 owner_id: ""
             });
 
-
-            // Refresh dashboard
-            await fetchDashboard();
-
+            fetchDashboard();
 
         } catch (error) {
-
-            console.error(
-                "Create store error:",
-                error
-            );
-
-
-            setStoreError(
+            alert(
                 error.response?.data?.message ||
                 "Failed to create store"
             );
-
-        } finally {
-
-            setCreatingStore(false);
-
         }
-
     };
-
-    const handleDeleteStore = async (storeId) => {
-
-    const confirmDelete = window.confirm(
-        "Are you sure you want to delete this store?"
-    );
-
-    if (!confirmDelete) {
-        return;
-    }
-
-    try {
-
-        setDeletingStore(storeId);
-
-        await api.delete(
-            `/admin/stores/${storeId}`
-        );
-
-        alert("Store deleted successfully");
-
-        await fetchDashboard();
-
-    } catch (error) {
-
-        console.error(
-            "Delete store error:",
-            error
-        );
-
-        alert(
-            error.response?.data?.message ||
-            "Failed to delete store"
-        );
-
-    } finally {
-
-        setDeletingStore(null);
-
-    }
-
-    };
-
-    const handleEditStore = (store) => {
-
-        setEditingStore(store);
-
-        setEditStoreForm({
-            name: store.name || "",
-            email: store.email || "",
-            address: store.address || "",
-            owner_id: store.owner_id || ""
-        });
-
-    };
-
-    const handleUpdateStore = async (e) => {
-
-    e.preventDefault();
-
-    try {
-
-        await api.put(
-            `/admin/stores/${editingStore.id}`,
-            {
-                name: editStoreForm.name,
-                email: editStoreForm.email,
-                address: editStoreForm.address,
-                owner_id:
-                    editStoreForm.owner_id
-                        ? Number(editStoreForm.owner_id)
-                        : null
-            }
-        );
-
-        alert("Store updated successfully");
-
-        setEditingStore(null);
-
-        await fetchDashboard();
-
-        } catch (error) {
-
-        console.error(
-            "Update store error:",
-            error
-        );
-
-        alert(
-            error.response?.data?.message ||
-            "Failed to update store"
-        );
-
-    }
-
-    };
-
-    // LOGOUT
 
     const handleLogout = () => {
-
         logout();
-
         navigate("/login");
-
     };
 
-
-
-    // SEARCH USERS
-
-
-    const filteredUsers =
-        users.filter((user) => {
-
-            const search =
-                userSearch
-                    .toLowerCase()
-                    .trim();
-
-
-            return (
-
-                user.name
-                    ?.toLowerCase()
-                    .includes(search)
-
-                ||
-
-                user.email
-                    ?.toLowerCase()
-                    .includes(search)
-
-                ||
-
-                user.role
-                    ?.toLowerCase()
-                    .includes(search)
-
-            );
-
-        });
-
-
-
-    // SEARCH STORES
-
-
-    const filteredStores =
-        stores.filter((store) => {
-
-            const search =
-                storeSearch
-                    .toLowerCase()
-                    .trim();
-
-
-            return (
-
-                store.name
-                    ?.toLowerCase()
-                    .includes(search)
-
-                ||
-
-                store.email
-                    ?.toLowerCase()
-                    .includes(search)
-
-                ||
-
-                store.address
-                    ?.toLowerCase()
-                    .includes(search)
-
-            );
-
-        });
-
-
-
-    // LOADING
-
-
     if (loading) {
-
         return (
             <div className="dashboard-loading">
-                <h2>
-                    Loading Admin Dashboard...
-                </h2>
+                <h2>Loading Admin Dashboard...</h2>
             </div>
         );
-
     }
 
+    if (error) {
+        return (
+            <div className="dashboard-error-page">
+                <div className="error-card">
+                    <h2>Something went wrong</h2>
+                    <p>{error}</p>
 
-    
-    // MAIN UI
-
+                    <button
+                        className="logout-button"
+                        onClick={handleLogout}
+                    >
+                        Logout
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
+        <div className="admin-dashboard">
 
-        <div className="dashboard">
+            {/* Header */}
 
-
-            {/* 
-                HEADER
-            */}
-
-            <header className="dashboard-header">
-
-                <div>
-
-                    <h1>
-                        Admin Dashboard
-                    </h1>
-
-                    <p>
-                        Manage users, stores and ratings
-                    </p>
-
-                </div>
+          <Navbar
+                tittle="Admin Dashboard"
+                subtittle="Manage users, stores and platform data"
+          />
 
 
-                <button
-                    onClick={handleLogout}
-                    className="logout-button"
-                >
-                    Logout
-                </button>
+            <main className="admin-content">
 
-            </header>
+                {/* Statistics */}
 
+                <section className="admin-section">
 
-
-            <main className="dashboard-content">
-
-
-                {/* 
-                    ERROR
-                */}
-
-                {error && (
-
-                    <div className="error-message">
-
-                        {error}
-
+                    <div className="section-heading">
+                        <h2>Overview</h2>
+                        <p>Platform statistics</p>
                     </div>
 
-                )}
+                    <div className="admin-stats">
 
+                        <div className="admin-stat-card">
+                            <span>Users</span>
+                            <h3>
+                                {stats?.total_users ?? 0}
+                            </h3>
+                        </div>
 
+                        <div className="admin-stat-card">
+                            <span>Stores</span>
+                            <h3>
+                                {stats?.total_stores ?? 0}
+                            </h3>
+                        </div>
 
-                {/*
-                    STATISTICS
-                */}
-
-                <section className="stats-grid">
-
-
-                    <div className="stat-card">
-
-                        <h3>
-                            Total Users
-                        </h3>
-
-                        <p className="stat-number">
-
-                            {
-                                dashboard?.total_users ??
-                                0
-                            }
-
-                        </p>
+                        <div className="admin-stat-card">
+                            <span>Ratings</span>
+                            <h3>
+                                {stats?.total_ratings ?? 0}
+                            </h3>
+                        </div>
 
                     </div>
-
-
-
-                    <div className="stat-card">
-
-                        <h3>
-                            Total Stores
-                        </h3>
-
-                        <p className="stat-number">
-
-                            {
-                                dashboard?.total_stores ??
-                                0
-                            }
-
-                        </p>
-
-                    </div>
-
-
-
-                    <div className="stat-card">
-
-                        <h3>
-                            Total Ratings
-                        </h3>
-
-                        <p className="stat-number">
-
-                            {
-                                dashboard?.total_ratings ??
-                                0
-                            }
-
-                        </p>
-
-                    </div>
-
 
                 </section>
 
 
+                {/* Create Store */}
 
-                {/*
-                    CREATE STORE
-                */}
+                <section className="admin-section">
 
-                <section className="dashboard-section">
-
-
-                    <h2>
-                        Create New Store
-                    </h2>
-
+                    <div className="section-heading">
+                        <h2>Create Store</h2>
+                        <p>Add a new store to the platform</p>
+                    </div>
 
                     <form
                         className="store-form"
-                        onSubmit={handleCreateStore}
+                        onSubmit={createStore}
                     >
 
+                        <input
+                            type="text"
+                            name="name"
+                            value={storeForm.name}
+                            onChange={handleStoreChange}
+                            placeholder="Store name"
+                            required
+                        />
 
-                        {/* Store Name */}
+                        <input
+                            type="email"
+                            name="email"
+                            value={storeForm.email}
+                            onChange={handleStoreChange}
+                            placeholder="Store email"
+                            required
+                        />
 
-                        <div className="form-group">
+                        <input
+                            type="text"
+                            name="address"
+                            value={storeForm.address}
+                            onChange={handleStoreChange}
+                            placeholder="Store address"
+                            required
+                        />
 
-                            <label>
-                                Store Name
-                            </label>
+                        <input
+                            type="number"
+                            name="owner_id"
+                            value={storeForm.owner_id}
+                            onChange={handleStoreChange}
+                            placeholder="Owner ID (optional)"
+                        />
 
-                            <input
-                                type="text"
-                                name="name"
-                                value={
-                                    storeForm.name
-                                }
-                                onChange={
-                                    handleStoreChange
-                                }
-                                placeholder="Enter store name"
-                                required
-                            />
-
-                        </div>
-
-
-
-                        {/* Store Email */}
-
-                        <div className="form-group">
-
-                            <label>
-                                Store Email
-                            </label>
-
-                            <input
-                                type="email"
-                                name="email"
-                                value={
-                                    storeForm.email
-                                }
-                                onChange={
-                                    handleStoreChange
-                                }
-                                placeholder="Enter store email"
-                                required
-                            />
-
-                        </div>
-
-
-
-                        {/* Address */}
-
-                        <div className="form-group">
-
-                            <label>
-                                Store Address
-                            </label>
-
-                            <input
-                                type="text"
-                                name="address"
-                                value={
-                                    storeForm.address
-                                }
-                                onChange={
-                                    handleStoreChange
-                                }
-                                placeholder="Enter store address"
-                                required
-                            />
-
-                        </div>
-
-
-
-                        {/* Owner */}
-
-                        <div className="form-group">
-
-                            <label>
-                                Select Owner
-                            </label>
-
-
-                            <select
-                                name="owner_id"
-                                value={
-                                    storeForm.owner_id
-                                }
-                                onChange={
-                                    handleStoreChange
-                                }
-                                required
-                            >
-
-                                <option value="">
-                                    Select an owner
-                                </option>
-
-
-                                {owners.map(
-                                    (owner) => (
-
-                                        <option
-                                            key={owner.id}
-                                            value={owner.id}
-                                        >
-
-                                            {
-                                                owner.name
-                                            }
-
-                                            {" - "}
-
-                                            {
-                                                owner.email
-                                            }
-
-                                        </option>
-
-                                    )
-                                )}
-
-                            </select>
-
-                        </div>
-
-
-
-                        {/* Message */}
-
-                        {storeMessage && (
-
-                            <div className="success-message">
-
-                                {storeMessage}
-
-                            </div>
-
-                        )}
-
-
-
-                        {storeError && (
-
-                            <div className="error-message">
-
-                                {storeError}
-
-                            </div>
-
-                        )}
-
-
-
-                        {/* Submit */}
-
-                        <div className="form-button">
-
-                            <button
-                                type="submit"
-                                disabled={
-                                    creatingStore
-                                }
-                            >
-
-                                {
-                                    creatingStore
-                                        ? "Creating..."
-                                        : "Create Store"
-                                }
-
-                            </button>
-
-                        </div>
-
+                        <button
+                            type="submit"
+                            className="form-button"
+                        >
+                            Create Store
+                        </button>
 
                     </form>
 
                 </section>
 
-                {editingStore && (
 
-                        <section className="dashboard-section">
+                {/* Users */}
 
-                                    <h2>
-                                         Edit Store
-                                    </h2>
+                <section className="admin-section">
 
+                    <div className="section-heading">
+                        <h2>Users</h2>
+                        <p>Manage registered users</p>
+                    </div>
 
-                                    <form
-                                             className="store-form"
-                                             onSubmit={handleUpdateStore}
-                                    >
+                    <div className="admin-search">
 
-                                {/* Store Name */}
+                        <input
+                            type="text"
+                            value={userName}
+                            onChange={(e) =>
+                                setUserName(e.target.value)
+                            }
+                            placeholder="Search by store name"
+                        />
 
-                                    <div className="form-group">
+                        <input
+                            type="text"
+                            value={userEmail}
+                            onChange={(e) => 
+                                setUserEmail(e.target.value)
+                            }
+                            placeholder="Search by email"
+                        />
 
-                <label>
-                    Store Name
-                </label>
+                        <input
+                            type="text"
+                            value={userAddress}
+                            onChange={(e) =>
+                                setUserAddress(e.target.value)
+                            }
+                            placeholder="Search by address"
+                        />
 
-                <input
-                    type="text"
-                    value={editStoreForm.name}
-                    onChange={(e) =>
-                        setEditStoreForm({
-                            ...editStoreForm,
-                            name: e.target.value
-                        })
-                    }
-                    required
-                />
-
-                                    </div>
-
-
-                                {/* Email */}
-
-                                   <div className="form-group">
-
-                <label>
-                    Store Email
-                </label>
-
-                <input
-                    type="email"
-                    value={editStoreForm.email}
-                    onChange={(e) =>
-                        setEditStoreForm({
-                            ...editStoreForm,
-                            email: e.target.value
-                        })
-                    }
-                    required
-                />
-
-                                   </div>
-
-
-                                {/* Address */}
-
-                                 <div className="form-group">
-
-                <label>
-                    Store Address
-                </label>
-
-                <input
-                    type="text"
-                    value={editStoreForm.address}
-                    onChange={(e) =>
-                        setEditStoreForm({
-                            ...editStoreForm,
-                            address: e.target.value
-                        })
-                    }
-                    required
-                />
-
-                                </div>
-
-
-                                {/* Owner */}
-
-                                   <div className="form-group">
-
-                <label>
-                    Select Owner
-                </label>
-
-                <select
-                    value={editStoreForm.owner_id}
-                    onChange={(e) =>
-                        setEditStoreForm({
-                            ...editStoreForm,
-                            owner_id: e.target.value
-                        })
-                    }
-                >
-
-                    <option value="">
-                        Select Owner
-                    </option>
-
-
-                    {owners.map((owner) => (
-
-                        <option
-                            key={owner.id}
-                            value={owner.id}
+                        <select 
+                            value={userRole}
+                            onChange={(e) => setUserRole(e.target.value)}
                         >
-                            {owner.name} - {owner.email}
-                        </option>
+                            <option value="">All Roles</option>
+                            <option value="USER">User</option>
+                            <option value="OWNER">Owner</option>
+                            <option value="ADMIN">Admin</option>
+                        </select>
 
-                    ))}
+                        <select 
+                            value={userSortBy}
+                            onChange={(e)=> setUserSortBy(e.target.value)}
+                        >
+                            <option value="created_at">Created Date</option>
+                            <option value="name">Name</option>
+                            <option value="email">Email</option>
+                            <option value="role">Role</option>
 
-                </select>
+                        </select>
 
-                                 </div>
+                        <select 
+                            value={userOrder}
+                            onChange={(e)=> setUserOrder(e.target.value)}
+                        >
+                            <option value="DESC">Descending</option>
+                            <option value="ASC">Ascending</option>
+                        </select>
 
-
-                                {/* Buttons */}
-
-                                   <div className="form-button">
-
-                <button type="submit">
-                    Update Store
-                </button>
-
-
-                <button
-                    type="button"
-                    onClick={() =>
-                        setEditingStore(null)
-                    }
-                >
-                    Cancel
-                </button>
-
-                                 </div>
-
-                                </form>
-
-                        </section>
-
-                    )}
-
-                {/* 
-                    USERS
-                */}
-
-                <section className="dashboard-section">
-
-
-                    <div className="section-header">
-
-                        <h2>
-                            Users
-                        </h2>
+                        <button onClick={searchUsers}>
+                            Search
+                        </button>
 
                     </div>
 
+                    <div className="admin-table-container">
 
-                    <input
-                        className="search-input"
-                        type="text"
-                        placeholder="Search by name, email or role..."
-                        value={userSearch}
-                        onChange={(e) =>
-                            setUserSearch(
-                                e.target.value
-                            )
-                        }
-                    />
+                        <table className="admin-table">
 
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Address</th>
+                                    <th>Role</th>
+                                </tr>
+                            </thead>
 
-                    <div className="table-container">
+                            <tbody>
 
-                        {filteredUsers.length === 0 ? (
+                                {users.map((user) => (
+                                    <tr key={user.id}>
 
-                            <p>
-                                No users found.
-                            </p>
+                                        <td>
+                                            <strong>
+                                                {user.name}
+                                            </strong>
+                                        </td>
 
-                        ) : (
+                                        <td>
+                                            {user.email}
+                                        </td>
 
-                            <table>
+                                        <td>
+                                            {user.address}
+                                        </td>
 
-                                <thead>
-
-                                    <tr>
-
-                                        <th>
-                                            ID
-                                        </th>
-
-                                        <th>
-                                            Name
-                                        </th>
-
-                                        <th>
-                                            Email
-                                        </th>
-
-                                        <th>
-                                            Role
-                                        </th>
-
-                                        <th>
-                                            Address
-                                        </th>
+                                        <td>
+                                            <span className="role-badge">
+                                                {user.role}
+                                            </span>
+                                        </td>
 
                                     </tr>
+                                ))}
 
-                                </thead>
+                            </tbody>
 
-
-                                <tbody>
-
-                                    {
-                                        filteredUsers.map(
-                                            (user) => (
-
-                                                <tr
-                                                    key={
-                                                        user.id
-                                                    }
-                                                >
-
-                                                    <td>
-                                                        {
-                                                            user.id
-                                                        }
-                                                    </td>
-
-                                                    <td>
-                                                        {
-                                                            user.name
-                                                        }
-                                                    </td>
-
-                                                    <td>
-                                                        {
-                                                            user.email
-                                                        }
-                                                    </td>
-
-                                                    <td>
-                                                        {
-                                                            user.role
-                                                        }
-                                                    </td>
-
-                                                    <td>
-                                                        {
-                                                            user.address ||
-                                                            "N/A"
-                                                        }
-                                                    </td>
-
-                                                </tr>
-
-                                            )
-                                        )
-                                    }
-
-                                </tbody>
-
-                            </table>
-
-                        )}
+                        </table>
 
                     </div>
 
                 </section>
 
 
+                {/* Stores */}
 
-                {/*
-                    STORES
-                */}
+                <section className="admin-section">
 
-                <section className="dashboard-section">
+                    <div className="section-heading">
+                        <h2>Stores</h2>
+                        <p>Manage platform stores</p>
+                    </div>
 
+                    <div className="admin-search">
 
-                    <div className="section-header">
+                        <input
+                            type="text"
+                            value={storeName}
+                            onChange={(e) =>
+                                setStoreName(e.target.value)
+                            }
+                            placeholder="Search by store name"
+                        />
 
-                        <h2>
-                            Stores
-                        </h2>
+                        <input 
+                            type="text"
+                            value={storeEmail}
+                            onChange={(e) =>
+                                setStoreEmail(e.target.value)
+                            }
+                            placeholder="Search by email"
+                        />
+
+                        <input
+                            type="text"
+                            value={storeAddress}
+                            onChange={(e)=>
+                               setStoreAddress(e.target.value)
+                            }
+                            placeholder="Search by address"
+                        />
+
+                        <button onClick={searchStores}>
+                            Search
+                        </button>
 
                     </div>
 
+                    <div className="admin-table-container">
 
-                    <input
-                        className="search-input"
-                        type="text"
-                        placeholder="Search by name, email or address..."
-                        value={storeSearch}
-                        onChange={(e) =>
-                            setStoreSearch(
-                                e.target.value
-                            )
-                        }
-                    />
+                        <table className="admin-table">
 
+                            <thead>
+                                <tr>
+                                    <th>Store</th>
+                                    <th>Email</th>
+                                    <th>Address</th>
+                                    <th>Rating</th>
+                                </tr>
+                            </thead>
 
-                    <div className="table-container">
+                            <tbody>
 
-                        {filteredStores.length === 0 ? (
+                                {stores.map((store) => (
+                                    <tr key={store.id}>
 
-                            <p>
-                                No stores found.
-                            </p>
+                                        <td>
+                                            <strong>
+                                                {store.name}
+                                            </strong>
+                                        </td>
 
-                        ) : (
+                                        <td>
+                                            {store.email}
+                                        </td>
 
-                            <table>
+                                        <td>
+                                            {store.address}
+                                        </td>
 
-                                <thead>
-
-                                    <tr>
-
-                                        <th>
-                                            ID
-                                        </th>
-
-                                        <th>
-                                            Name
-                                        </th>
-
-                                        <th>
-                                            Email
-                                        </th>
-
-                                        <th>
-                                            Address
-                                        </th>
-
-                                        <th>
-                                            Owner ID
-                                        </th>
-
-                                        <th>
-                                            Action
-                                        </th>
+                                        <td>
+                                            ⭐{" "}
+                                            {store.overall_rating ?? 0}
+                                        </td>
 
                                     </tr>
+                                ))}
 
-                                </thead>
+                            </tbody>
 
-
-                                <tbody>
-
-                                    {
-                                        filteredStores.map(
-                                            (store) => (
-
-                                                <tr
-                                                    key={
-                                                        store.id
-                                                    }
-                                                >
-
-                                                    <td>
-                                                        {
-                                                            store.id
-                                                        }
-                                                    </td>
-
-                                                    <td>
-                                                        {
-                                                            store.name
-                                                        }
-                                                    </td>
-
-                                                    <td>
-                                                        {
-                                                            store.email
-                                                        }
-                                                    </td>
-
-                                                    <td>
-                                                        {
-                                                            store.address
-                                                        }
-                                                    </td>
-
-                                                    <td>
-                                                        {
-                                                            store.owner_id ??
-                                                            "N/A"
-                                                        }
-                                                    </td>
-
-                                                    <td>
-
-                                                     <td>
-
-                                            <button
-                                                    className="edit-button"
-                                                        onClick={() =>
-                                                        handleEditStore(store)
-                                                    }
-                                                    >
-                                                     Edit
-                                            </button>
-
-
-                                            <button
-                                                     className="delete-button"
-                                                        onClick={() =>
-                                                        handleDeleteStore(store.id)
-                                                    }
-                                                    disabled={
-                                                        deletingStore === store.id
-                                                    }
-                                                    >
-                                                   {
-                                                    deletingStore === store.id
-                                                    ? "Deleting..."
-                                                        : "Delete"
-                                                    }
-                                                    </button>
-
-                                                    </td>   
-
-                                                    <button
-                                                        className="delete-button"
-                                                        onClick={() =>
-                                                        handleDeleteStore(store.id)
-                                                          }
-                                                         disabled={
-                                                            deletingStore === store.id
-                                                        }
-                                                          >
-
-                                                         {
-                                                             deletingStore === store.id
-                                                               ? "Deleting..."
-                                                             : "Delete"
-                                                       }
-
-                                                    </button>
-
-                                                </td>
-
-                                                </tr>
-
-                                            )
-                                        )
-                                    }
-
-                                </tbody>
-
-                            </table>
-
-                        )}
+                        </table>
 
                     </div>
 
                 </section>
-
 
             </main>
 
         </div>
-
     );
-
 }
-
 
 export default AdminDashboard;

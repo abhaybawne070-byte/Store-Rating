@@ -1,45 +1,30 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import "../styles/dashboard.css";
 
 import api from "../services/api";
 import { logout } from "../utils/auth";
 
+import "../styles/dashboard.css";
 
 function OwnerDashboard() {
-
     const navigate = useNavigate();
 
     const [dashboard, setDashboard] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-
     const fetchDashboard = async () => {
-
         try {
-
             setLoading(true);
             setError("");
 
-            const response = await api.get(
-                "/owner/dashboard"
-            );
-
-            console.log(
-                "Owner dashboard:",
-                response.data
-            );
+            const response = await api.get("/owner/dashboard");
 
             setDashboard(response.data);
 
         } catch (error) {
-
-            console.error(
-                "Owner dashboard error:",
-                error
-            );
+            console.error("Owner dashboard error:", error);
 
             setError(
                 error.response?.data?.message ||
@@ -47,223 +32,249 @@ function OwnerDashboard() {
             );
 
         } finally {
-
             setLoading(false);
-
         }
     };
 
-
     useEffect(() => {
-
         fetchDashboard();
-
     }, []);
 
-
     const handleLogout = () => {
-
         logout();
-
         navigate("/login");
-
     };
 
-
     if (loading) {
-
         return (
-            <h2>Loading Owner Dashboard...</h2>
+            <div className="dashboard-loading">
+                <h2>Loading Dashboard...</h2>
+            </div>
         );
-
     }
 
-
     if (error) {
-
         return (
-            <div>
+            <div className="dashboard-error-page">
+                <div className="error-card">
+                    <h2>Something went wrong</h2>
+                    <p>{error}</p>
 
-                <h2>Error</h2>
+                    <button
+                        className="logout-button"
+                        onClick={handleLogout}
+                    >
+                        Logout
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
-                <p>{error}</p>
+    return (
+        <div className="owner-dashboard">
 
-                <button onClick={handleLogout}>
+            {/* Header */}
+
+            <header className="owner-header">
+
+                <div>
+                    <h1>Owner Dashboard</h1>
+                    <p>Manage your store and view ratings</p>
+                </div>
+
+                <button
+                    className="logout-button"
+                    onClick={handleLogout}
+                >
                     Logout
                 </button>
 
-            </div>
-        );
-
-    }
+            </header>
 
 
-    return (
+            <main className="owner-content">
 
-        <div className="owner-dashboard">
+                {/* Store */}
 
-            <h1>Owner Dashboard</h1>
+                <section className="owner-section">
 
-            <button 
-                className="logout-btn"
-                onClick={handleLogout}
-            >
-                Logout
-            </button>
+                    <div className="section-heading">
+                        <div>
+                            <h2>My Store</h2>
+                            <p>Store information</p>
+                        </div>
+                    </div>
 
+                    <div className="store-info-card">
 
-            <hr />
+                        <div>
+                            <span>Store Name</span>
+                            <h3>
+                                {dashboard?.store?.name}
+                            </h3>
+                        </div>
 
+                        <div>
+                            <span>Email</span>
+                            <p>
+                                {dashboard?.store?.email}
+                            </p>
+                        </div>
 
-            {/* Store Information */}
+                        <div>
+                            <span>Address</span>
+                            <p>
+                                {dashboard?.store?.address}
+                            </p>
+                        </div>
 
-            <section className="owner-section">
+                    </div>
 
-            <h2>
-                My Store
-            </h2>
-                
-            <div className="store-info">
-                  <h3>
-                    {dashboard?.store?.name}
-                  </h3>
-                  <p>
-                    <strong>Email:</strong>{" "}
-                    {dashboard?.store?.email}
-                  </p>
-                  <p>
-                    <strong>Address:</strong>{" "}
-                    {dashboard?.store?.address}
-                  </p>
-            </div>
-
-            </section>
-
-
-            {/* Statistics */}
-
-            <section className="owner-section">
-
-            <h2>Statistics</h2>
-
-            <div className="owner-stats">
-
-                <div className="owner-stat-card">
-                   <h3>
-                    Average Rating
-                   </h3>
-
-                   <p>
-                        ⭐{" "}
-                        {dashboard?.statistics?.average_rating ?? 0}
-                   </p>
-
-                </div>
-
-                <div className="owner-stat-card">
-                      <h3>
-                        Total Rating
-                      </h3>
-
-                      <p>
-                        {dashboard?.statistics?.total_ratings??0}
-                      </p>
-                </div>
-
-            </div>
-
-        </section>
-           
+                </section>
 
 
-            {/* Ratings */}
+                {/* Statistics */}
 
-        <section className="owner-section">
+                <section className="owner-section">
 
-         <h2>
-             User Ratings
-         </h2>
+                    <div className="section-heading">
+                        <div>
+                            <h2>Statistics</h2>
+                            <p>Overview of your store ratings</p>
+                        </div>
+                    </div>
 
+                    <div className="owner-stats">
 
-         {!dashboard?.ratings ||
-         dashboard.ratings.length === 0 ? (
+                        <div className="owner-stat-card">
 
-        <p>
-            No ratings yet.
-        </p>
+                            <span className="stat-label">
+                                Average Rating
+                            </span>
 
-          ) : (
+                            <h3>
+                                ⭐{" "}
+                                {dashboard?.statistics
+                                    ?.average_rating ?? 0}
+                            </h3>
 
-        <table className="owner-table">
+                            <p>
+                                Out of 5
+                            </p>
 
-            <thead>
-
-                <tr>
-
-                    <th>
-                        User
-                    </th>
-
-                    <th>
-                        Email
-                    </th>
-
-                    <th>
-                        Rating
-                    </th>
-
-                    <th>
-                        Date
-                    </th>
-
-                </tr>
-
-            </thead>
+                        </div>
 
 
-            <tbody>
+                        <div className="owner-stat-card">
 
-                {dashboard.ratings.map(
-                    (rating) => (
+                            <span className="stat-label">
+                                Total Ratings
+                            </span>
 
-                        <tr key={rating.id}>
+                            <h3>
+                                {dashboard?.statistics
+                                    ?.total_ratings ?? 0}
+                            </h3>
 
-                            <td>
-                                {rating.user_name}
-                            </td>
+                            <p>
+                                Customer ratings
+                            </p>
 
-                            <td>
-                                {rating.user_email}
-                            </td>
+                        </div>
 
-                            <td className="owner-rating">
-                                ⭐ {rating.rating}
-                            </td>
+                    </div>
 
-                            <td>
-                                {rating.created_at
-                                    ? new Date(
-                                        rating.created_at
-                                    ).toLocaleDateString()
-                                    : "-"
-                                }
-                            </td>
+                </section>
 
-                        </tr>
 
-                    )
-                )}
+                {/* Ratings */}
 
-            </tbody>
+                <section className="owner-section">
 
-        </table>
- 
-        )}
+                    <div className="section-heading">
+                        <div>
+                            <h2>Customer Ratings</h2>
+                            <p>
+                                See what customers think about your store
+                            </p>
+                        </div>
+                    </div>
 
-    </section>
 
-    </div>
+                    {!dashboard?.ratings ||
+                    dashboard.ratings.length === 0 ? (
 
+                        <div className="empty-message">
+                            No ratings yet.
+                        </div>
+
+                    ) : (
+
+                        <div className="owner-table-container">
+
+                            <table className="owner-table">
+
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Email</th>
+                                        <th>Rating</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    {dashboard.ratings.map(
+                                        (rating) => (
+
+                                            <tr key={rating.id}>
+
+                                                <td>
+                                                    <strong>
+                                                        {rating.user_name}
+                                                    </strong>
+                                                </td>
+
+                                                <td>
+                                                    {rating.user_email}
+                                                </td>
+
+                                                <td>
+                                                    <span className="owner-rating">
+                                                        ⭐{" "}
+                                                        {rating.rating}
+                                                    </span>
+                                                </td>
+
+                                                <td>
+                                                    {rating.created_at
+                                                        ? new Date(
+                                                            rating.created_at
+                                                        ).toLocaleDateString()
+                                                        : "-"
+                                                    }
+                                                </td>
+
+                                            </tr>
+
+                                        )
+                                    )}
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    )}
+
+                </section>
+
+            </main>
+
+        </div>
     );
 }
 

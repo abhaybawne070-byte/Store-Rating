@@ -841,3 +841,684 @@ th {
     font-size: 14px;
 }
 
+/* 
+  USER DASHBOARD UI
+*/
+
+.user-dashboard {
+    min-height: 100vh;
+    background: #f4f7fb;
+    padding-bottom: 40px;
+}
+
+
+/* Header */
+
+.user-header {
+    background: white;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.user-header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.user-header p {
+    margin: 5px 0 0;
+    color: #6b7280;
+}
+
+
+/* Search */
+
+.search-box {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 25px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.search-box h2 {
+    margin-top: 0;
+}
+
+.search-controls {
+    display: flex;
+    gap: 12px;
+}
+
+.search-controls input {
+    flex: 1;
+    padding: 12px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    outline: none;
+}
+
+.search-controls input:focus {
+    border-color: #2563eb;
+}
+
+.search-controls button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.search-controls button:hover {
+    background: #1d4ed8;
+}
+
+
+/* Stores */
+
+.stores-section {
+    max-width: 1200px;
+    margin: auto;
+}
+
+.stores-section h2 {
+    margin-bottom: 20px;
+}
+
+.store-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(300px, 1fr)
+    );
+    gap: 20px;
+}
+
+
+/* Store Card */
+
+.store-card {
+    background: white;
+    padding: 22px;
+    border-radius: 14px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.store-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.09);
+}
+
+.store-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.store-card-header h3 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.rating-badge {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.store-details {
+    margin: 20px 0;
+}
+
+.store-details p {
+    color: #4b5563;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+
+/* My Rating */
+
+.my-rating {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+
+/* Rating Action */
+
+.rating-action {
+    display: flex;
+    gap: 10px;
+}
+
+.rating-action select {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+}
+
+.rating-btn {
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.rating-btn:hover {
+    background: #1d4ed8;
+}
+
+
+/* Messages */
+
+.loading-message,
+.empty-message,
+.error-message {
+    max-width: 1200px;
+    margin: 25px auto;
+    padding: 15px;
+    text-align: center;
+}
+
+.error-message {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-radius: 8px;
+}
+
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+    .user-header {
+        padding: 18px;
+    }
+
+    .search-box {
+        margin: 20px;
+    }
+
+    .search-controls {
+        flex-direction: column;
+    }
+
+    .stores-section {
+        margin: 20px;
+    }
+
+    .rating-action {
+        flex-direction: column;
+    }
+
+}
+
+/*
+   OWNER DASHBOARD UI
+*/
+
+.owner-dashboard {
+    min-height: 100vh;
+    background: #f4f7fb;
+    padding-bottom: 50px;
+}
+
+.owner-header {
+    background: white;
+    padding: 22px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.owner-header h1 {
+    margin: 0;
+    font-size: 26px;
+}
+
+.owner-header p {
+    margin: 5px 0 0;
+    color: #6b7280;
+}
+
+.owner-content {
+    max-width: 1200px;
+    margin: 30px auto;
+}
+
+.owner-section {
+    margin-bottom: 30px;
+}
+
+.section-heading {
+    margin-bottom: 16px;
+}
+
+.section-heading h2 {
+    margin: 0;
+}
+
+.section-heading p {
+    margin: 5px 0 0;
+    color: #6b7280;
+}
+
+
+/* Store Information */
+
+.store-info-card {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    background: white;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.store-info-card span,
+.stat-label {
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.store-info-card h3 {
+    margin: 8px 0 0;
+    font-size: 20px;
+}
+
+.store-info-card p {
+    margin: 8px 0 0;
+    color: #374151;
+}
+
+
+/* Statistics */
+
+.owner-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.owner-stat-card {
+    background: white;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.owner-stat-card h3 {
+    margin: 12px 0 5px;
+    font-size: 30px;
+}
+
+.owner-stat-card p {
+    margin: 0;
+    color: #6b7280;
+}
+
+
+/* Ratings Table */
+
+.owner-table-container {
+    background: white;
+    border-radius: 14px;
+    overflow-x: auto;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.owner-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.owner-table th,
+.owner-table td {
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 1px solid #eef0f3;
+}
+
+.owner-table th {
+    background: #f9fafb;
+    color: #4b5563;
+    font-size: 14px;
+}
+
+.owner-table td {
+    color: #374151;
+}
+
+.owner-rating {
+    display: inline-block;
+    padding: 5px 10px;
+    background: #fef3c7;
+    color: #92400e;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+
+/* Loading / Error */
+
+.dashboard-loading,
+.dashboard-error-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f4f7fb;
+}
+
+.error-card {
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+    .owner-header {
+        padding: 18px;
+    }
+
+    .owner-content {
+        margin: 20px;
+    }
+
+    .store-info-card {
+        grid-template-columns: 1fr;
+    }
+
+    .owner-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .owner-table th,
+    .owner-table td {
+        padding: 12px;
+        white-space: nowrap;
+    }
+
+}
+
+/* 
+   ADMIN DASHBOARD UI
+ */
+
+.admin-dashboard {
+    min-height: 100vh;
+    background: #f4f7fb;
+    padding-bottom: 50px;
+}
+
+.admin-header {
+    background: white;
+    padding: 22px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-header h1 {
+    margin: 0;
+    font-size: 26px;
+}
+
+.admin-header p {
+    margin: 5px 0 0;
+    color: #6b7280;
+}
+
+.admin-content {
+    max-width: 1200px;
+    margin: 30px auto;
+}
+
+.admin-section {
+    margin-bottom: 35px;
+}
+
+
+/* Statistics */
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.admin-stat-card {
+    background: white;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.admin-stat-card span {
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.admin-stat-card h3 {
+    margin: 10px 0 0;
+    font-size: 32px;
+}
+
+
+/* Search */
+
+.admin-search {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.admin-search input {
+    flex: 1;
+    padding: 12px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    outline: none;
+}
+
+.admin-search input:focus {
+    border-color: #2563eb;
+}
+
+.admin-search button {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.admin-search button:hover {
+    background: #1d4ed8;
+}
+
+
+/* Tables */
+
+.admin-table-container {
+    background: white;
+    border-radius: 14px;
+    overflow-x: auto;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 1px solid #eef0f3;
+}
+
+.admin-table th {
+    background: #f9fafb;
+    color: #4b5563;
+    font-size: 14px;
+}
+
+.admin-table td {
+    color: #374151;
+}
+
+
+/* Role */
+
+.role-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: #e0e7ff;
+    color: #3730a3;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+    .admin-header {
+        padding: 18px;
+    }
+
+    .admin-content {
+        margin: 20px;
+    }
+
+    .admin-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-search {
+        flex-direction: column;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        white-space: nowrap;
+        padding: 12px;
+    }
+
+}
+
+/*
+   COMMON NAVBAR
+*/
+
+.app-navbar {
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.navbar-content {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px 0;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-content h1 {
+    margin: 0;
+    font-size: 25px;
+}
+
+.navbar-content p {
+    margin: 5px 0 0;
+    color: #6b7280;
+}
+
+.logout-button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+
+    background: #ef4444;
+    color: white;
+
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.logout-button:hover {
+    background: #dc2626;
+}
+
+@media (max-width: 700px) {
+
+    .navbar-content {
+        padding: 16px 20px;
+    }
+
+    .navbar-content h1 {
+        font-size: 20px;
+    }
+
+    .navbar-content p {
+        font-size: 13px;
+    }
+
+}
+
+.admin-search select {
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    outline: none;
+}
+
+.admin-search select:focus {
+    border-color: #2563eb;
+}

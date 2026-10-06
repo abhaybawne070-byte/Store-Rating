@@ -1,41 +1,31 @@
 import { useEffect, useState } from "react";
+
 import api from "../services/api";
-import { useNavigate } from "react-router-dom";
-import { logout } from "../utils/auth";
+import Navbar from "../components/Navbar";
+
 import "../styles/dashboard.css";
+
 
 function UserDashboard() {
 
-    const navigate = useNavigate();
-
     const [stores, setStores] = useState([]);
-
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
-
-    const [sortBy, setSortBy] = useState("id");
-    const [order, setOrder] = useState("asc");
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
     const [ratings, setRatings] = useState({});
 
-
-    // Get stores
     const fetchStores = async () => {
-
         try {
-
             setLoading(true);
             setError("");
 
             const response = await api.get("/user/stores", {
                 params: {
                     name: name || undefined,
-                    address: address || undefined,
-                    sortBy,
-                    order
+                    address: address || undefined
                 }
             });
 
@@ -58,26 +48,19 @@ function UserDashboard() {
     };
 
 
-    // Page load
     useEffect(() => {
         fetchStores();
     }, []);
 
 
-    // Rating input change
     const handleRatingChange = (storeId, value) => {
-
         setRatings({
             ...ratings,
             [storeId]: value
         });
-
     };
 
-
-    // Submit new rating
     const submitRating = async (storeId) => {
-
         const rating = ratings[storeId];
 
         if (!rating) {
@@ -86,7 +69,6 @@ function UserDashboard() {
         }
 
         try {
-
             await api.post("/user/ratings", {
                 store_id: storeId,
                 rating: Number(rating)
@@ -97,19 +79,14 @@ function UserDashboard() {
             fetchStores();
 
         } catch (error) {
-
             alert(
                 error.response?.data?.message ||
                 "Failed to submit rating"
             );
-
         }
     };
 
-
-    // Update existing rating
     const updateRating = async (storeId) => {
-
         const rating = ratings[storeId];
 
         if (!rating) {
@@ -118,7 +95,6 @@ function UserDashboard() {
         }
 
         try {
-
             await api.put(
                 `/user/ratings/${storeId}`,
                 {
@@ -131,258 +107,226 @@ function UserDashboard() {
             fetchStores();
 
         } catch (error) {
-
             alert(
                 error.response?.data?.message ||
                 "Failed to update rating"
             );
-
         }
-    };
-
-
-    // Logout
-    const handleLogout = () => {
-
-        logout();
-
-        navigate("/login");
-
     };
 
 
     return (
         <div className="user-dashboard">
 
-            <div>
-                <h1>Store Rating App</h1>
-                <p>Find stores and share your rating</p>
-            </div>
-            <button
-                 className="logout-btn"
-                 onClick={handleLogout}
-            >
-                Logout
-            </button>
+            {/* Header */}
 
-
-            <hr />
-
-
-            <h2>Stores</h2>
+            <Navbar
+                title="Store Rating app"
+                subtitle="Discover and rate stores"
+            />
 
 
             {/* Search */}
 
-            <div className="search-box">
+            <section className="search-box">
 
-                <input
-                    type="text"
-                    placeholder="Search store name"
-                    value={name}
-                    onChange={(e) =>
-                        setName(e.target.value)
-                    }
-                />
+                <h2>Find Stores</h2>
 
-                <input
-                    type="text"
-                    placeholder="Search address"
-                    value={address}
-                    onChange={(e) =>
-                        setAddress(e.target.value)
-                    }
-                />
+                <div className="search-controls">
 
-                <button onClick={fetchStores}>
-                    Search
-                </button>
+                    <input
+                        type="text"
+                        placeholder="Search by store name"
+                        value={name}
+                        onChange={(e) =>
+                            setName(e.target.value)
+                        }
+                    />
 
-            </div>
-             
-             
-            <hr/>
-      
-            <div className="sort-box">
+                    <input
+                        type="text"
+                        placeholder="Search by address"
+                        value={address}
+                        onChange={(e) =>
+                            setAddress(e.target.value)
+                        }
+                    />
 
-                <select
-                    value={sortBy}
-                    onChange={(e) => 
-                        setSortBy(e.target.value)
-                    }
-                >
-                    <option value="id">
-                        Default
-                    </option>
+                    <button onClick={fetchStores}>
+                        Search
+                    </button>
 
-                    <option value="name">
-                        Store Name
-                    </option>
+                </div>
 
-                    <option value="address">
-                        Address
-                    </option>
-
-                    <option value="rating">
-                        Rating
-                    </option>
-                </select>
-
-                <select 
-                    value={order}
-                    onChange={(e) => 
-                        setOrder(e.target.value)
-                    }
-                >
-                    <option value="asc">
-                        Ascending
-                    </option>
-
-                    <option value="desc">
-                        Descending
-                    </option>
-                </select>
-
-                <button onClick={fetchStores}>
-                    Sort
-                </button>
-            </div>
-
-            <hr />
+            </section>
 
 
             {/* Error */}
 
             {error && (
-                <p>{error}</p>
+                <div className="error-message">
+                    {error}
+                </div>
             )}
 
 
             {/* Loading */}
 
             {loading && (
-                <p>Loading stores...</p>
+                <div className="loading-message">
+                    Loading stores...
+                </div>
             )}
 
 
-            {/* Store list */}
+            {/* Empty */}
 
             {!loading && stores.length === 0 && (
-                <p>No stores found.</p>
+                <div className="empty-message">
+                    No stores found.
+                </div>
             )}
 
+
+            {/* Stores */}
 
             {!loading && stores.length > 0 && (
 
-                <div>
+                <section className="stores-section">
 
-                    {stores.map((store) => (
+                    <h2>Available Stores</h2>
 
-                        <div
-                            key={store.id}
-                            className="store-card"
-                        >
+                    <div className="store-grid">
 
-                            <h3>
-                                {store.name}
-                            </h3>
+                        {stores.map((store) => (
 
-                            <p>
-                                Email: {store.email}
-                            </p>
-
-                            <p>
-                                Address: {store.address}
-                            </p>
-
-                            <p>
-                                Overall Rating:
-                                {" "}
-                                ⭐ {store.overall_rating}
-                            </p>
-
-                            <p>
-                                My Rating:
-                                {" "}
-                                {store.my_rating === null
-                                    ? "Not rated yet"
-                                    : `⭐ ${store.my_rating}`
-                                }
-                            </p>
-
-
-                            {/* Rating */}
-
-                            <select
-                                className="rating-select"
-                                value={ratings[store.id] || ""}
-                                onChange={(e) =>
-                                    handleRatingChange(
-                                        store.id,
-                                        e.target.value
-                                    )
-                                }
+                            <div
+                                className="store-card"
+                                key={store.id}
                             >
 
-                                <option value="">
-                                    Select Rating
-                                </option>
+                                <div className="store-card-header">
 
-                                <option value="1">
-                                    ⭐ 1
-                                </option>
+                                    <h3>
+                                        {store.name}
+                                    </h3>
 
-                                <option value="2">
-                                    ⭐ 2
-                                </option>
+                                    <span className="rating-badge">
+                                        ⭐ {store.overall_rating}
+                                    </span>
 
-                                <option value="3">
-                                    ⭐ 3
-                                </option>
-
-                                <option value="4">
-                                    ⭐ 4
-                                </option>
-
-                                <option value="5">
-                                    ⭐ 5
-                                </option>
-
-                            </select>
+                                </div>
 
 
-                            {" "}
+                                <div className="store-details">
+
+                                    <p>
+                                        <strong>Email:</strong>{" "}
+                                        {store.email}
+                                    </p>
+
+                                    <p>
+                                        <strong>Address:</strong>{" "}
+                                        {store.address}
+                                    </p>
+
+                                </div>
 
 
-                            {store.my_rating === null ? (
+                                <div className="my-rating">
 
-                                <button
-                                    className="rating-btn"
-                                    onClick={() =>
-                                        submitRating(store.id)
-                                    }
-                                >
-                                    Submit Rating
-                                </button>
+                                    <span>
+                                        <strong>My Rating:</strong>
+                                    </span>
 
-                            ) : (
+                                    <span>
+                                        {store.my_rating === null
+                                            ? "Not rated yet"
+                                            : `⭐ ${store.my_rating}`
+                                        }
+                                    </span>
 
-                                <button
-                                     className="rating-btn"
-                                    onClick={() =>
-                                        updateRating(store.id)
-                                    }
-                                >
-                                    Update Rating
-                                </button>
+                                </div>
 
-                            )}
 
-                        </div>
+                                <div className="rating-action">
 
-                    ))}
+                                    <select
+                                        value={
+                                            ratings[store.id] || ""
+                                        }
+                                        onChange={(e) =>
+                                            handleRatingChange(
+                                                store.id,
+                                                e.target.value
+                                            )
+                                        }
+                                    >
 
-                </div>
+                                        <option value="">
+                                            Select Rating
+                                        </option>
+
+                                        <option value="1">
+                                            ⭐ 1
+                                        </option>
+
+                                        <option value="2">
+                                            ⭐ 2
+                                        </option>
+
+                                        <option value="3">
+                                            ⭐ 3
+                                        </option>
+
+                                        <option value="4">
+                                            ⭐ 4
+                                        </option>
+
+                                        <option value="5">
+                                            ⭐ 5
+                                        </option>
+
+                                    </select>
+
+
+                                    {store.my_rating === null ? (
+
+                                        <button
+                                            className="rating-btn"
+                                            onClick={() =>
+                                                submitRating(
+                                                    store.id
+                                                )
+                                            }
+                                        >
+                                            Submit Rating
+                                        </button>
+
+                                    ) : (
+
+                                        <button
+                                            className="rating-btn"
+                                            onClick={() =>
+                                                updateRating(
+                                                    store.id
+                                                )
+                                            }
+                                        >
+                                            Update Rating
+                                        </button>
+
+                                    )}
+
+                                </div>
+
+                            </div>
+
+                        ))}
+
+                    </div>
+
+                </section>
 
             )}
 
