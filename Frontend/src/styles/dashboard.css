@@ -1522,3 +1522,19 @@ th {
 .admin-search select:focus {
     border-color: #2563eb;
 }
+
+.store-form select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    color: #111827;
+    outline: none;
+    cursor: pointer;
+}
+
+.store-form select:focus {
+    border-color: #2563eb;
+}

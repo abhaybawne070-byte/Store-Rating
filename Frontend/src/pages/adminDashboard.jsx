@@ -10,6 +10,9 @@ import "../styles/dashboard.css";
 function AdminDashboard() {
     const navigate = useNavigate();
 
+    const [owners, setOwners] = useState([]);
+    const [ownerId, setOwnerId] = useState("");
+
     const [stats, setStats] = useState(null);
     const [users, setUsers] = useState([]);
     const [stores, setStores] = useState([]);
@@ -17,14 +20,16 @@ function AdminDashboard() {
     const [userName, setUserName] = useState("");
     const [userEmail, setUserEmail] = useState("");
     const [userAddress, setUserAddress] = useState("");
+    const [userRole, setUserRole] = useState("");
+    const [userSortBy, setUserSortBy] = useState("created_at");
+    const [userOrder, setUserOrder] = useState("DESC");
 
     const [storeName, setStoreName] = useState("");
     const [storeEmail, setStoreEmail] = useState("");
     const [storeAddress, setStoreAddress] = useState("");
-
-    const [userRole, setUserRole] = useState("");
-    const [userSortBy, setUserSortBy] = useState("created_at");
-    const [userOrder, setUserOrder] = useState("DESC");
+    const [storeSortBy, setStoreSortBy] = useState("created_at");
+    const [storeOrder, setStoreOrder] = useState("DESC");
+ 
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -35,6 +40,20 @@ function AdminDashboard() {
         address: "",
         owner_id: ""
     });
+
+    const fetchOwners = async () => {
+        try {
+            const response = await api.get("/admin/users",{
+                params: {
+                    role:"OWNER"
+                }
+            });
+
+            setOwners(response.data);
+        }catch(error){
+            console.error("Owner fetch error:",error)
+        };
+    };
 
     const fetchDashboard = async () => {
         try {
@@ -69,6 +88,7 @@ function AdminDashboard() {
 
     useEffect(() => {
         fetchDashboard();
+        fetchOwners();
     }, []);
 
     const searchUsers = async () => {
@@ -95,9 +115,11 @@ function AdminDashboard() {
         try {
             const response = await api.get("/admin/stores", {
                 params: {
-                    name: storeSearch || undefined,
+                    name: storeName || undefined,
                     email: storeEmail || undefined,
-                    address: storeAddress || undefined
+                    address: storeAddress || undefined,
+                    sortBy: storeSortBy,
+                    order: storeOrder
                 }
             });
 
@@ -149,6 +171,8 @@ function AdminDashboard() {
         }
     };
 
+    
+
     const handleLogout = () => {
         logout();
         navigate("/login");
@@ -186,7 +210,7 @@ function AdminDashboard() {
             {/* Header */}
 
           <Navbar
-                tittle="Admin Dashboard"
+                title="Admin Dashboard"
                 subtittle="Manage users, stores and platform data"
           />
 
@@ -271,13 +295,26 @@ function AdminDashboard() {
                             required
                         />
 
-                        <input
-                            type="number"
+                        <select 
                             name="owner_id"
                             value={storeForm.owner_id}
                             onChange={handleStoreChange}
-                            placeholder="Owner ID (optional)"
-                        />
+                        >
+                            <option value="">
+                                select Owner (Optional)
+                            </option>
+
+                            {owners.map((owner)=>(
+                                <option
+                                   key={owner.id}
+                                   value={owner.id}
+                                >
+                                    {owner.name} - {owner.email}
+
+                                </option>
+                            ))}
+
+                        </select>
 
                         <button
                             type="submit"
@@ -343,7 +380,7 @@ function AdminDashboard() {
                             value={userSortBy}
                             onChange={(e)=> setUserSortBy(e.target.value)}
                         >
-                            <option value="created_at">Created Date</option>
+                            <option value="create_at">Create Date</option>
                             <option value="name">Name</option>
                             <option value="email">Email</option>
                             <option value="role">Role</option>
@@ -451,6 +488,26 @@ function AdminDashboard() {
                             }
                             placeholder="Search by address"
                         />
+
+                        <select 
+                            value={storeSortBy}
+                            onChange={(e) => setStoreSortBy(e.target.value)}
+                        >
+                            <option value="create_at">Create Date</option>
+                            <option value="name">Name</option>
+                            <option value="email">Email</option>
+                            <option value="address">Address</option>
+                            <option value="rating">Rating</option>
+
+                        </select>
+
+                        <select 
+                            value={storeOrder}
+                            onChange={(e) => setStoreOrder(e.target.value)}
+                        >
+                            <option value="DESC">Descending</option>
+                            <option value="ASC">Ascending</option>
+                        </select>
 
                         <button onClick={searchStores}>
                             Search
