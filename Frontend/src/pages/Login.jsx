@@ -1,150 +1,131 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import api from "../services/api";
 import "../styles/dashboard.css";
 
 function Login() {
-
     const navigate = useNavigate();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
     const handleLogin = async (e) => {
-
         e.preventDefault();
 
         setError("");
         setLoading(true);
 
         try {
-
             const response = await api.post("/auth/login", {
                 email,
                 password
             });
 
-            console.log("Login response:", response.data);
+            localStorage.setItem("token", response.data.token);
 
-            // Token save
-            localStorage.setItem(
-                "token",
-                response.data.token
-            );
-
-            // User data save
             localStorage.setItem(
                 "user",
                 JSON.stringify(response.data.user)
             );
 
-            // Role ke according redirect
             const role = response.data.user.role;
 
             if (role === "ADMIN") {
                 navigate("/admin");
-            }
-            else if (role === "USER") {
+            } else if (role === "USER") {
                 navigate("/user");
-            }
-            else if (role === "OWNER") {
+            } else if (role === "OWNER") {
                 navigate("/owner");
-            }
-            else {
+            } else {
                 setError("Invalid user role");
             }
 
         } catch (error) {
-
             console.error("Login error:", error);
 
             setError(
                 error.response?.data?.message ||
                 "Login failed"
             );
-
         } finally {
-
             setLoading(false);
-
         }
     };
 
     return (
-
         <div className="auth-page">
 
-            <div className="auth-page">
+            <div className="auth-card">
 
-            <h1>Store Rating App</h1>
+                <h1 className="auth-title">
+                    Store Rating App
+                </h1>
 
-            <p className="auth-subtitle">
-                Login to continue
-            </p>
+                <p className="auth-subtitle">
+                    Login to your account
+                </p>
 
-            <h2>Login</h2>
+                <form
+                    className="auth-form"
+                    onSubmit={handleLogin}
+                >
 
-            <form onSubmit={handleLogin}>
+                    <div className="auth-field">
+                        <label>Email</label>
 
-                <div>
-                    <label>Email</label>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) =>
+                                setEmail(e.target.value)
+                            }
+                            placeholder="Enter your email"
+                            required
+                        />
+                    </div>
 
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) =>
-                            setEmail(e.target.value)
+                    <div className="auth-field">
+                        <label>Password</label>
+
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) =>
+                                setPassword(e.target.value)
+                            }
+                            placeholder="Enter your password"
+                            required
+                        />
+                    </div>
+
+                    {error && (
+                        <div className="auth-error">
+                            {error}
+                        </div>
+                    )}
+
+                    <button
+                        type="submit"
+                        className="auth-button"
+                        disabled={loading}
+                    >
+                        {loading
+                            ? "Logging in..."
+                            : "Login"
                         }
-                        placeholder="Enter email"
-                        required
-                    />
-                </div>
+                    </button>
 
-
-
-                <div>
-                    <label>Password</label>
-
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) =>
-                            setPassword(e.target.value)
-                        }
-                        placeholder="Enter password"
-                        required
-                    />
-                </div>
-
-
-
-                {error && (
-                    <p  className="error-message">
-                         {error}
-                    </p>
-                )}
+                </form>
 
                 <button
-                    className="auth-button"
-                    type="submit"
-                    disabled={loading}
+                    className="auth-secondary"
+                    onClick={() => navigate("/signup")}
                 >
-                    {loading ? "Logging in..." : "Login"}
+                    Create New Account
                 </button>
-
-            </form>
-
-
-
-            <button
-                className="secondary-button"
-                onClick={() => navigate("/signup")}
-            >
-                Create Account
-            </button>
 
             </div>
 
