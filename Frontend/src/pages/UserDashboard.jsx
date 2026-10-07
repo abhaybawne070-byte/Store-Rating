@@ -16,6 +16,9 @@ function UserDashboard() {
     const [error, setError] = useState("");
 
     const [ratings, setRatings] = useState({});
+    const [currentPassword , setCurrentPassword] =useState("");
+    const [newPassword , setNewPassword] = useState("");
+    const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
     const fetchStores = async () => {
         try {
@@ -114,6 +117,31 @@ function UserDashboard() {
         }
     };
 
+    const updatePassword = async (e) => {
+        e.preventDefault();
+
+        if(newPassword !== confirmNewPassword){
+            alert("New password do not match");
+        }
+
+        try{
+            await api.put("/user/password",{
+                currentPassword,
+                newPassword
+            })
+            alert("password update successfully");
+
+            setCurrentPassword("");
+            setNewPassword("");
+            setConfirmNewPassword("");
+        }catch (error){
+            alert(
+                error.response?.data?.message ||
+                "Faild to update password"
+            )
+        }
+    }
+
 
     return (
         <div className="user-dashboard">
@@ -124,6 +152,54 @@ function UserDashboard() {
                 title="Store Rating app"
                 subtitle="Discover and rate stores"
             />
+
+            {/* password update */}
+
+            <section className="password-section" >
+
+                 <h2>Update Password</h2>
+                
+                <form 
+                   className="password-form"
+                   onSubmit={updatePassword}
+                >
+                    <input 
+                        type="password"
+                        placeholder="Current Password"
+                        value={currentPassword} 
+                        onChange={(e) =>
+                            setCurrentPassword(e.target.value)
+                        }
+                        required
+                    />
+
+                    <input 
+                        type="password"
+                        placeholder="New Password"
+                        value={newPassword}
+                        onChange={(e) =>
+                            setNewPassword(e.target.value)
+                        }
+                        required
+                    />
+
+                    <input 
+                        type="password"
+                        placeholder="Confirm New Password"
+                        value={confirmNewPassword}
+                        onChange={(e) =>
+                            setConfirmNewPassword(e.target.value)
+                        } 
+                        required
+                    />
+
+                    <button type="submit">
+                        Update Password
+                    </button>
+
+                </form>
+
+            </section>
 
 
             {/* Search */}

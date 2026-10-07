@@ -1538,3 +1538,61 @@ th {
 .store-form select:focus {
     border-color: #2563eb;
 }
+
+/* Password Update */
+
+.password-section {
+    max-width: 1200px;
+    margin: 25px auto;
+    padding: 25px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+
+.password-section h2 {
+    margin: 0 0 20px;
+    font-size: 20px;
+}
+
+.password-form {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.password-form input {
+    padding: 12px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+}
+
+.password-form input:focus {
+    border-color: #2563eb;
+}
+
+.password-form button {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.password-form button:hover {
+    background: #1d4ed8;
+}
+
+@media (max-width: 700px) {
+    .password-form {
+        grid-template-columns: 1fr;
+    }
+
+    .password-section {
+        margin: 20px;
+    }
+}
